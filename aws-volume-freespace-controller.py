@@ -26,7 +26,7 @@ def growUpVolume(freeSpace):
 
     if error == '':
         print('Current volume size is: ' + str(size) + 'GB')
-        newSize = parseInt(size) + 2
+        newSize = int(size) + 2
         print('New volume size is: ' + str(newSize) + 'GB')
 
 freeSpace = getFreeSpace()
