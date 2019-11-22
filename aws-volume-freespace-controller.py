@@ -8,7 +8,7 @@ freeSpaceLowerLimit = 7
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
     diskFreeSpace = diskUsage.free / (1024 ** 3)
-    print('Current free space: ', diskFreeSpace)
+    print('Current free space: ' + diskFreeSpace)
     return diskFreeSpace
 
 def checkFreeSpaceLimit(freeSpace):
@@ -25,6 +25,7 @@ def growUpVolume(freeSpace):
     output, error = awsCurrentVolumeSize.communicate()
 
     print(output)
+    print(error)
 
 freeSpace = getFreeSpace()
 if checkFreeSpaceLimit(freeSpace) == True:
