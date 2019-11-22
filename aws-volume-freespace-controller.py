@@ -25,7 +25,8 @@ def growUpVolume(freeSpace):
     size, error = awsCurrentVolumeSize.communicate()
 
     if error == '':
-        print('Current volume size is: ' + str(size))
+        print('Current volume size is: ' + str(size) + 'GB')
+        print('New volume size is: ' + str(size + 2) + 'GB')
 
 freeSpace = getFreeSpace()
 if checkFreeSpaceLimit(freeSpace) == True:
