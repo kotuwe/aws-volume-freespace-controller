@@ -22,10 +22,10 @@ def checkFreeSpaceLimit(freeSpace):
 def growUpVolume(freeSpace):
     cmd = "aws ec2 describe-volumes --volume-ids=vol-0b748cdfc3f2658b3 | jq -r '.Volumes' | jq -r '.[].Size'"
     awsCurrentVolumeSize = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    output, error = awsCurrentVolumeSize.communicate()
+    size, error = awsCurrentVolumeSize.communicate()
 
-    print(output)
-    print(error)
+    if error == '':
+        print('Current volume size is: ' + str(size))
 
 freeSpace = getFreeSpace()
 if checkFreeSpaceLimit(freeSpace) == True:
