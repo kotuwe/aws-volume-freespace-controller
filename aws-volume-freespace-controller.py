@@ -2,10 +2,14 @@
 
 import subprocess
 import psutil
+import time
 
 freeSpaceLowerLimit = 7
 growupStep = 2
 EC2volumeId = "vol-0b748cdfc3f2658b3"
+rootDrive = "/dev/nvme0n1"
+rootPart = "/dev/nvme0n1p1"
+rootPartNum = "1"
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
@@ -23,8 +27,8 @@ def checkFreeSpaceLimit(freeSpace):
 
 def getEC2VolumeSize():
     cmd = "aws ec2 describe-volumes --volume-ids=" + EC2volumeId + " | jq -r '.Volumes' | jq -r '.[].Size'"
-    awsCurrentVolumeSize = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    size, error = awsCurrentVolumeSize.communicate()
+    awsCurrentVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    size, error = awsCurrentVolumeSizeRun.communicate()
 
     if error == '':
         print('Current volume size is: ' + str(size) + 'GB')
@@ -34,19 +38,44 @@ def getEC2VolumeSize():
 
 def updateEC2VolumeSize(volumeSize):
     cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
-    awsUpdateVolumeSize = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    size, error = awsUpdateVolumeSize.communicate()
+    awsUpdateVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    size, error = awsUpdateVolumeSizeRun.communicate()
 
     if error == '':
-        print('Update is complete, new volume size is: ' + getEC2VolumeSize())
+        time.sleep(120)
+
+        print('Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
+        return True
+    else:
+        return False
+
+def updatePartitionSize():
+    cmd = "growpart " + rootDrive + " " + rootPartNum
+    updatePartitionSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    size, error = updatePartitionSizeRun.communicate()
+
+    if error == '':
+        print('Update partition size is complete')
         return True
     else:
         return False
     
+def resizeFs():
+    cmd = "resize2fs " + rootPart
+    resizeFsRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    size, error = resizeFsRun.communicate()
+
+    if error == '':
+        print('Resize FS is complete')
+        return True
+    else:
+        return False
 
 freeSpace = getFreeSpace()
 if checkFreeSpaceLimit(freeSpace) == True:
     currentVolumeSize = getEC2VolumeSize()
     if currentVolumeSize != 0:
         newVolumeSize = int(currentVolumeSize) + growupStep
-        updateEC2VolumeSize(newVolumeSize)
+        if updateEC2VolumeSize(newVolumeSize) == True:
+            if updatePartitionSize() == True:
+                resizeFs()
