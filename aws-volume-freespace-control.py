@@ -3,7 +3,12 @@
 import subprocess
 import psutil
 import time
-from systemd import journal
+import logging
+from systemd.journal import JournalHandler
+
+log = logging.getLogger('demo')
+log.addHandler(JournalHandler())
+log.setLevel(logging.INFO)
 
 freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
 growupStep = 2                          # Partition grow up step (in GB)
@@ -16,15 +21,15 @@ rootPartNum = "1"                       # Number of root partition
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
     diskFreeSpace = diskUsage.free / (1024 ** 3)
-    journal.write('Current free space: ' + str(diskFreeSpace))
+    log.info('Current free space: ' + str(diskFreeSpace))
     return diskFreeSpace
 
 def checkFreeSpaceLimit(freeSpace):
     if freeSpace < freeSpaceLowerLimit:
-        journal.write('Need to growup!')
+        log.info('Need to growup!')
         return True
     else:
-        journal.write('All done!')
+        log.info('All done!')
         return False
 
 def getEC2VolumeSize():
