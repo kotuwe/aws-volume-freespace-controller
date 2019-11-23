@@ -31,7 +31,7 @@ def getEC2VolumeSize():
     size, error = awsCurrentVolumeSizeRun.communicate()
 
     if error == '':
-        print('Current volume size is: ' + str(size) + 'GB')
+        print('Current volume size is: ' + str(size))
         return size
     else:
         return 0
@@ -79,6 +79,6 @@ if checkFreeSpaceLimit(freeSpace) == True:
     currentVolumeSize = getEC2VolumeSize()
     if currentVolumeSize != 0:
         newVolumeSize = int(currentVolumeSize) + growupStep
-        if updateEC2VolumeSize(newVolumeSize) == True:
+        if updateEC2VolumeSize(newVolumeSize) == False:
             if updatePartitionSize() == True:
                 resizeFs()
