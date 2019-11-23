@@ -38,26 +38,26 @@ def getEC2VolumeSize():
     size, error = awsCurrentVolumeSizeRun.communicate()
 
     if error == '':
-        print('Current volume size is: ' + str(size))
+        log.info('Current volume size is: ' + str(size))
         return size
     else:
-        print(error)
+        log.info(error)
         return 0
 
 def updateEC2VolumeSize(volumeSize):
-    print('Trying to update EC2 volume size')
+    log.info('Trying to update EC2 volume size')
     cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
     awsUpdateVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     size, error = awsUpdateVolumeSizeRun.communicate()
 
     if error == '':
-        print('Please wait 120 sec')
+        log.info('Please wait 120 sec')
         time.sleep(120)
-        print('Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
+        log.info('Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
         time.sleep(120)
         return True
     else:
-        print(error)
+        log.info(error)
         return False
 
 def updatePartitionSize():
@@ -66,10 +66,10 @@ def updatePartitionSize():
     size, error = updatePartitionSizeRun.communicate()
 
     if error == '':
-        print('Update partition size is complete')
+        log.info('Update partition size is complete')
         return True
     else:
-        print(error)
+        log.info(error)
         return False
     
 def resizeFs():
@@ -78,10 +78,10 @@ def resizeFs():
     size, error = resizeFsRun.communicate()
 
     if error == '':
-        print('Resize FS is complete')
+        log.info('Resize FS is complete')
         return True
     else:
-        print(error)
+        log.info(error)
         return False
 
 def main():
