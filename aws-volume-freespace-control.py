@@ -3,7 +3,6 @@
 import subprocess
 import psutil
 import time
-import datetime
 
 freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
 growupStep = 2                          # Partition grow up step (in GB)
@@ -16,15 +15,15 @@ rootPartNum = "1"                       # Number of root partition
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
     diskFreeSpace = diskUsage.free / (1024 ** 3)
-    print(timeStamp() + 'Current free space: ' + str(diskFreeSpace))
+    print('Current free space: ' + str(diskFreeSpace))
     return diskFreeSpace
 
 def checkFreeSpaceLimit(freeSpace):
     if freeSpace < freeSpaceLowerLimit:
-        print(timeStamp() + 'Need to growup!')
+        print('Need to growup!')
         return True
     else:
-        print(timeStamp() + 'All done!')
+        print('All done!')
         return False
 
 def getEC2VolumeSize():
@@ -33,22 +32,22 @@ def getEC2VolumeSize():
     size, error = awsCurrentVolumeSizeRun.communicate()
 
     if error == '':
-        print(timeStamp() + 'Current volume size is: ' + str(size))
+        print('Current volume size is: ' + str(size))
         return size
     else:
         print(error)
         return 0
 
 def updateEC2VolumeSize(volumeSize):
-    print(timeStamp() + 'Trying to update EC2 volume size')
+    print('Trying to update EC2 volume size')
     cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
     awsUpdateVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     size, error = awsUpdateVolumeSizeRun.communicate()
 
     if error == '':
-        print(timeStamp() + 'Please wait 120 sec')
+        print('Please wait 120 sec')
         time.sleep(120)
-        print(timeStamp() + 'Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
+        print('Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
         time.sleep(120)
         return True
     else:
@@ -61,7 +60,7 @@ def updatePartitionSize():
     size, error = updatePartitionSizeRun.communicate()
 
     if error == '':
-        print(timeStamp() + 'Update partition size is complete')
+        print('Update partition size is complete')
         return True
     else:
         print(error)
@@ -73,17 +72,11 @@ def resizeFs():
     size, error = resizeFsRun.communicate()
 
     if error == '':
-        print(timeStamp() + 'Resize FS is complete')
+        print('Resize FS is complete')
         return True
     else:
         print(error)
         return False
-
-def timeStamp():
-    ts = time.time()
-    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    return st + ' resizeEC2Volume - '
-
 
 def main():
     while True:
