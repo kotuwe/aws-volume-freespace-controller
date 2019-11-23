@@ -4,7 +4,6 @@ import subprocess
 import psutil
 import time
 import datetime
-import daemon
 
 freeSpaceLowerLimit = 2
 growupStep = 2
@@ -97,5 +96,5 @@ def main():
                         resizeFs()
         time.sleep(600)
 
-with daemon.DaemonContext():
+if __name__ == "__main__":
     main()
