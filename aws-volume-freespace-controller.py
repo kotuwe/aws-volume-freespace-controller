@@ -5,12 +5,13 @@ import psutil
 import time
 import datetime
 
-freeSpaceLowerLimit = 2
-growupStep = 2
-EC2volumeId = "vol-0b748cdfc3f2658b3"
-rootDrive = "/dev/xvda"
-rootPart = "/dev/xvda1"
-rootPartNum = "1"
+freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
+growupStep = 2                          # Partition grow up step (in GB)
+checkInterval = 6                       # Check interval in seconds
+EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
+rootDrive = "/dev/xvda"                 # Name of root drive
+rootPart = "/dev/xvda1"                 # Name of root partition
+rootPartNum = "1"                       # Number of root partition
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
@@ -94,7 +95,7 @@ def main():
                 if updateEC2VolumeSize(newVolumeSize) == True:
                     if updatePartitionSize() == True:
                         resizeFs()
-        time.sleep(600)
+        time.sleep(checkInterval)
 
 if __name__ == "__main__":
     main()
