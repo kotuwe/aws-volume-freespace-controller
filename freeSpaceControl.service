@@ -1,0 +1,13 @@
+[Unit]
+Description=Daemon for volume free space control
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/freeSpaceControl.pid
+ExecStart=/usr/bin/python /usr/sbin/aws-volume-freespace-checker.py
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
