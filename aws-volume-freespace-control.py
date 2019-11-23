@@ -3,6 +3,7 @@
 import subprocess
 import psutil
 import time
+from systemd import journal
 
 freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
 growupStep = 2                          # Partition grow up step (in GB)
