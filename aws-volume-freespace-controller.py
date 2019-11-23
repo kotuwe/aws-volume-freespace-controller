@@ -37,14 +37,17 @@ def getEC2VolumeSize():
         return 0
 
 def updateEC2VolumeSize(volumeSize):
+    print('Trying to update EC2 volume size')
+
     cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
     awsUpdateVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     size, error = awsUpdateVolumeSizeRun.communicate()
 
     if error == '':
+        print('Please wait 120 sec')
         time.sleep(120)
-
         print('Update EC2 volume size is complete, new volume size is: ' + getEC2VolumeSize())
+        time.sleep(120)
         return True
     else:
         return False
