@@ -4,7 +4,7 @@ import subprocess
 import psutil
 import time
 
-freeSpaceLowerLimit = 7
+freeSpaceLowerLimit = 2
 growupStep = 2
 EC2volumeId = "vol-0b748cdfc3f2658b3"
 rootDrive = "/dev/xvda"
@@ -82,6 +82,6 @@ if checkFreeSpaceLimit(freeSpace) == True:
     currentVolumeSize = getEC2VolumeSize()
     if currentVolumeSize != 0:
         newVolumeSize = int(currentVolumeSize) + growupStep
-        if updateEC2VolumeSize(newVolumeSize) == False:
+        if updateEC2VolumeSize(newVolumeSize) == True:
             if updatePartitionSize() == True:
                 resizeFs()
