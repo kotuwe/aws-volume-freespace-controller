@@ -16,15 +16,15 @@ rootPartNum = "1"                       # Number of root partition
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
     diskFreeSpace = diskUsage.free / (1024 ** 3)
-    print('Current free space: ' + str(diskFreeSpace))
+    journal.write('Current free space: ' + str(diskFreeSpace))
     return diskFreeSpace
 
 def checkFreeSpaceLimit(freeSpace):
     if freeSpace < freeSpaceLowerLimit:
-        print('Need to growup!')
+        journal.write('Need to growup!')
         return True
     else:
-        print('All done!')
+        journal.write('All done!')
         return False
 
 def getEC2VolumeSize():
