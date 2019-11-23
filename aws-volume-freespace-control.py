@@ -17,6 +17,7 @@ EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
 rootDrive = "/dev/xvda"                 # Name of root drive
 rootPart = "/dev/xvda1"                 # Name of root partition
 rootPartNum = "1"                       # Number of root partition
+slackWebhook = "https://hooks.slack.com/services/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"
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
@@ -83,6 +84,10 @@ def resizeFs():
     else:
         log.info(error)
         return False
+
+def sendSlackNotification():
+    cmd = "curl -X POST -H \"Content-Type: application/json\" -d '{\"text\": \"Free space warning\"}' " + slackWebhook
+    slackNotifyRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 def main():
     while True:
