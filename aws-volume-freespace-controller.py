@@ -7,8 +7,8 @@ import time
 freeSpaceLowerLimit = 7
 growupStep = 2
 EC2volumeId = "vol-0b748cdfc3f2658b3"
-rootDrive = "/dev/nvme0n1"
-rootPart = "/dev/nvme0n1p1"
+rootDrive = "/dev/xvda"
+rootPart = "/dev/xvda1"
 rootPartNum = "1"
 
 def getFreeSpace():
