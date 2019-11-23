@@ -4,6 +4,8 @@ import subprocess
 import psutil
 
 freeSpaceLowerLimit = 7
+growupStep = 2
+EC2volumeId = "vol-0b748cdfc3f2658b3"
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
@@ -19,16 +21,32 @@ def checkFreeSpaceLimit(freeSpace):
         print('All done!')
         return False
 
-def growUpVolume(freeSpace):
-    cmd = "aws ec2 describe-volumes --volume-ids=vol-0b748cdfc3f2658b3 | jq -r '.Volumes' | jq -r '.[].Size'"
+def getEC2VolumeSize():
+    cmd = "aws ec2 describe-volumes --volume-ids=" + EC2volumeId + " | jq -r '.Volumes' | jq -r '.[].Size'"
     awsCurrentVolumeSize = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     size, error = awsCurrentVolumeSize.communicate()
 
     if error == '':
         print('Current volume size is: ' + str(size) + 'GB')
-        newSize = int(size) + 2
-        print('New volume size is: ' + str(newSize) + 'GB')
+        return size
+    else:
+        return 0
+
+def updateEC2VolumeSize(volumeSize):
+    cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
+    awsUpdateVolumeSize = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    size, error = awsUpdateVolumeSize.communicate()
+
+    if error == '':
+        print('Update is complete, new volume size is: ' + getEC2VolumeSize())
+        return True
+    else:
+        return False
+    
 
 freeSpace = getFreeSpace()
 if checkFreeSpaceLimit(freeSpace) == True:
-    growUpVolume(freeSpace)
+    currentVolumeSize = getEC2VolumeSize()
+    if currentVolumeSize != 0:
+        newVolumeSize = int(currentVolumeSize) + growupStep
+        updateEC2VolumeSize(newVolumeSize)
