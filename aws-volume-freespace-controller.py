@@ -4,6 +4,7 @@ import subprocess
 import psutil
 import time
 import datetime
+import daemon
 
 freeSpaceLowerLimit = 2
 growupStep = 2
@@ -83,11 +84,18 @@ def timeStamp():
     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     return st + ' resizeEC2Volume - '
 
-freeSpace = getFreeSpace()
-if checkFreeSpaceLimit(freeSpace) == True:
-    currentVolumeSize = getEC2VolumeSize()
-    if currentVolumeSize != 0:
-        newVolumeSize = int(currentVolumeSize) + growupStep
-        if updateEC2VolumeSize(newVolumeSize) == True:
-            if updatePartitionSize() == True:
-                resizeFs()
+
+def main():
+    while True:
+        freeSpace = getFreeSpace()
+        if checkFreeSpaceLimit(freeSpace) == True:
+            currentVolumeSize = getEC2VolumeSize()
+            if currentVolumeSize != 0:
+                newVolumeSize = int(currentVolumeSize) + growupStep
+                if updateEC2VolumeSize(newVolumeSize) == True:
+                    if updatePartitionSize() == True:
+                        resizeFs()
+        time.sleep(600)
+
+with daemon.DaemonContext():
+    main()
