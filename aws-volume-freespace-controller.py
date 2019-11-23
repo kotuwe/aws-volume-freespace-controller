@@ -34,6 +34,7 @@ def getEC2VolumeSize():
         print('Current volume size is: ' + str(size))
         return size
     else:
+        print(error)
         return 0
 
 def updateEC2VolumeSize(volumeSize):
@@ -61,6 +62,7 @@ def updatePartitionSize():
         print('Update partition size is complete')
         return True
     else:
+        print(error)
         return False
     
 def resizeFs():
@@ -72,6 +74,7 @@ def resizeFs():
         print('Resize FS is complete')
         return True
     else:
+        print(error)
         return False
 
 freeSpace = getFreeSpace()
