@@ -4,6 +4,8 @@ import subprocess
 import psutil
 import time
 import logging
+import requests
+import json
 from systemd.journal import JournalHandler
 
 log = logging.getLogger('demo')
@@ -17,7 +19,7 @@ EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
 rootDrive = "/dev/xvda"                 # Name of root drive
 rootPart = "/dev/xvda1"                 # Name of root partition
 rootPartNum = "1"                       # Number of root partition
-slackWebhook = "https://hooks.slack.com/services/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"
+slackWebhook = "https://hooks.slack.com/services/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"
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
@@ -86,13 +88,18 @@ def resizeFs():
         return False
 
 def sendSlackNotification():
-    cmd = "curl -X POST -H \"Content-Type: application/json\" -d '{\"text\": \"Free space warning\"}' " + slackWebhook
-    slackNotifyRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    log.info('Send Slack notification')
+    payload = {'text': "Free space warning!"}
+    res = requests.post(slackWebhook, json=payload)
+
+    if res.status_code != 200:
+        log.info('Notification error... code: ' + str(res.status_code) + ' with content: ' + res.content)
 
 def main():
     while True:
         freeSpace = getFreeSpace()
         if checkFreeSpaceLimit(freeSpace) == True:
+	    sendSlackNotification()
             currentVolumeSize = getEC2VolumeSize()
             if currentVolumeSize != 0:
                 newVolumeSize = int(currentVolumeSize) + growupStep
