@@ -14,7 +14,7 @@ log.setLevel(logging.INFO)
 
 freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
 growupStep = 2                          # Partition grow up step (in GB)
-checkInterval = 600                     # Check interval in seconds
+checkInterval = 6                       # Check interval (in minutes)
 EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
 rootDrive = "/dev/xvda"                 # Name of root drive
 rootPart = "/dev/xvda1"                 # Name of root partition
@@ -106,7 +106,7 @@ def main():
                 if updateEC2VolumeSize(newVolumeSize) == True:
                     if updatePartitionSize() == True:
                         resizeFs()
-        time.sleep(checkInterval)
+        time.sleep(checkInterval * 100)
 
 if __name__ == "__main__":
     main()
