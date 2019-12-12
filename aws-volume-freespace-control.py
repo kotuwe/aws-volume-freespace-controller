@@ -19,7 +19,7 @@ EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
 rootDrive = "/dev/xvda"                 # Name of root drive
 rootPart = "/dev/xvda1"                 # Name of root partition
 rootPartNum = "1"                       # Number of root partition
-slackWebhook = "https://hooks.slack.com/services/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"
+slackWebhook = ""
 
 def getFreeSpace():
     diskUsage = psutil.disk_usage('/')
