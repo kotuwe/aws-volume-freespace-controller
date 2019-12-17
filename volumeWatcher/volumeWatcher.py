@@ -11,19 +11,20 @@ log = logging.getLogger('demo')
 log.addHandler(JournaldLogHandler())
 log.setLevel(logging.INFO)
 
-freeSpaceLowerLimit = 2                 # Freespace lower limit (in GB)
-growupStep = 2                          # Partition grow up step (in GB)
-checkInterval = 6                       # Check interval (in minutes)
-EC2volumeId = "vol-0b748cdfc3f2658b3"   # EC2 volume ID
-rootDrive = "/dev/xvda"                 # Name of root drive
-rootPart = "/dev/xvda1"                 # Name of root partition
-rootPartNum = "1"                       # Number of root partition
-slackWebhook = ""
-
 class WatcherThread(threading.Thread):
-    def __init__(self):
+    def __init__(self, config):
         threading.Thread.__init__(self)
+        self.configure(config)
         self._running = True
+
+    def configure(self, config):
+        self.freeSpaceLowerLimit = config["lowLimit"]
+        self.growupStep = config["step"]
+        self.checkInterval = config["interval"]
+        self.EC2volumeId = config["EC2VolumeId"]
+        self.rootDrive = config["rootDrive"]
+        self.rootPart = config["rootPart"]
+        self.rootPartNum = config["rootPartNum"]
     
     def run(self):
         while True:
@@ -37,7 +38,7 @@ class WatcherThread(threading.Thread):
                     if self.updateEC2VolumeSize(newVolumeSize) == True:
                         if self.updatePartitionSize() == True:
                             self.resizeFs()
-            time.sleep(checkInterval * 60)
+            time.sleep(self.checkInterval * 60)
 
     def getFreeSpace(self):
         diskUsage = psutil.disk_usage('/')
@@ -46,7 +47,7 @@ class WatcherThread(threading.Thread):
         return diskFreeSpace
 
     def checkFreeSpaceLimit(self, freeSpace):
-        if freeSpace < freeSpaceLowerLimit:
+        if freeSpace < self.freeSpaceLowerLimit:
             log.info('Need to growup!')
             return True
         else:
