@@ -2,12 +2,14 @@ volume:
   lowLimit: 2
   upLimit: 20
   step: 2
-  interval: 6
+  interval: 5
   EC2VolumeId: vol-0b748cdfc3f2658b3
   rootDrive: /dev/xvda
   rootPart: /dev/xvda1
   rootPartNum: 1
 
 proc:
-  name: sidekiq
+  name: chromium
+  startLine: chromium
   memoryLimit: 2
+  interval: 5

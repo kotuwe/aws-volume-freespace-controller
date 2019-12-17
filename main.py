@@ -8,9 +8,6 @@ from volumeWatcher import volumeWatcher
 def main():
     procThread = procWatcher.WatcherThread(config["proc"])
     procThread.start()
-    time.sleep(3)
-    print('stop proc watcher thread')
-    procThread.stop()
 
     volumeThread = volumeWatcher.WatcherThread(config["volume"])
     volumeThread.start()
