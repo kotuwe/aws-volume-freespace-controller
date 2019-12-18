@@ -41,8 +41,8 @@ class WatcherThread(threading.Thread):
                     totalProc += 1
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
-        log.info("Total memory used by process: " + totalMemory)
-        log.info("Total process count: " + totalProc)
+        log.info("Total memory used by process: " + str(totalMemory))
+        log.info("Total process count: " + str(totalProc))
         if totalMemory > self.memoryLimit:
             log.info("Try to restart process")
             for proc in psutil.process_iter():
