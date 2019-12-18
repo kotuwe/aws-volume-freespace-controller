@@ -15,6 +15,6 @@ def main():
 
 
 if __name__ == "__main__":
-    with open("./centry-config.yml", "r") as configFile:
+    with open("/etc/centry.yml", "r") as configFile:
         config = yaml.load(configFile, Loader=yaml.FullLoader)
     main()
