@@ -2,6 +2,12 @@ import time
 import threading
 import psutil
 import subprocess
+import logging
+from systemd.journal import JournaldLogHandler
+
+log = logging.getLogger('demo')
+log.addHandler(JournaldLogHandler())
+log.setLevel(logging.INFO)
 
 class WatcherThread(threading.Thread):
     def __init__(self, config):
@@ -17,7 +23,7 @@ class WatcherThread(threading.Thread):
     def run(self):
         self.checkEnabled = True
         while(self._running):
-            print('Check process memory for: ', self.procName)
+            log.info('Check process memory for: ' + self.procName)
             self.checkProc(self.procName, self.startLine)
             time.sleep(5)
 
@@ -26,21 +32,26 @@ class WatcherThread(threading.Thread):
 
     def checkProc(self, procName, startLine):
         totalMemory = 0
+        totalProc = 0
         for proc in psutil.process_iter():
             try:
                 if procName.lower() in proc.name().lower():
                     rss = proc.memory_info().rss / 1024 / 1024 / 1024
                     totalMemory += rss
+                    totalProc += 1
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 pass
-        print("Total memory used by process: ", totalMemory)
+        log.info("Total memory used by process: " + totalMemory)
+        log.info("Total process count: " + totalProc)
         if totalMemory > self.memoryLimit:
-            print("Try to restart process")
+            log.info("Try to restart process")
             for proc in psutil.process_iter():
                 try:
                     if procName.lower() in proc.name().lower():
-                        proc.kill()
-                
+                        try:
+                            proc.kill()
+                        except psutil.NoSuchProcess:
+                            pass                
                 except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                     pass
             subprocess.Popen(startLine, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

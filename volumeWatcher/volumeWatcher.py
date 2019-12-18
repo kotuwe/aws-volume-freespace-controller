@@ -31,7 +31,6 @@ class WatcherThread(threading.Thread):
     
     def run(self):
         while(self._running):
-            print('check volume')
             freeSpace = self.getFreeSpace()
             if self.checkFreeSpaceLimit(freeSpace) == True:
                 self.sendSlackNotification()

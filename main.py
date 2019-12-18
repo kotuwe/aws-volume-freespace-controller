@@ -17,6 +17,4 @@ def main():
 if __name__ == "__main__":
     with open("./centry-config.yml", "r") as configFile:
         config = yaml.load(configFile, Loader=yaml.FullLoader)
-    
-    print(config)
     main()

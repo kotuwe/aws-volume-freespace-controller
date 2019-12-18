@@ -10,8 +10,8 @@ volume:
   rootPartNum: 1
 
 proc:
-  enable: false
-  name: chromium
+  enable: true
+  name: sidekiq
   startLine: chromium
   memoryLimit: 2
   interval: 5
