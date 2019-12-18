@@ -4,12 +4,15 @@ import psutil
 import subprocess
 
 class WatcherThread(threading.Thread):
-    def __init__(self, configProc):
+    def __init__(self, config):
         threading.Thread.__init__(self)
-        self._running = True
-        self.procName = configProc["name"]
-        self.memoryLimit = configProc["memoryLimit"]
-        self.startLine = configProc["startLine"]
+        if config["enable"] == True:
+            self._running = True
+        else:
+            self._running = False
+        self.procName = config["name"]
+        self.memoryLimit = config["memoryLimit"]
+        self.startLine = config["startLine"]
     
     def run(self):
         self.checkEnabled = True

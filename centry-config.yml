@@ -1,4 +1,5 @@
 volume:
+  enable: false
   lowLimit: 2
   upLimit: 20
   step: 2
@@ -9,6 +10,7 @@ volume:
   rootPartNum: 1
 
 proc:
+  enable: false
   name: chromium
   startLine: chromium
   memoryLimit: 2

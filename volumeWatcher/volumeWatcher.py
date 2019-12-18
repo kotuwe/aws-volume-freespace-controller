@@ -15,7 +15,10 @@ class WatcherThread(threading.Thread):
     def __init__(self, config):
         threading.Thread.__init__(self)
         self.configure(config)
-        self._running = True
+        if config["enable"] == True:
+            self._running = True
+        else:
+            self._running = False
 
     def configure(self, config):
         self.freeSpaceLowerLimit = config["lowLimit"]
@@ -27,7 +30,7 @@ class WatcherThread(threading.Thread):
         self.rootPartNum = config["rootPartNum"]
     
     def run(self):
-        while True:
+        while(self._running):
             print('check volume')
             freeSpace = self.getFreeSpace()
             if self.checkFreeSpaceLimit(freeSpace) == True:
