@@ -5,7 +5,7 @@ import subprocess
 import logging
 from systemd.journal import JournaldLogHandler
 
-log = logging.getLogger('demo')
+log = logging.getLogger('centry')
 log.addHandler(JournaldLogHandler())
 log.setLevel(logging.INFO)
 
