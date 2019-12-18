@@ -12,6 +12,7 @@ volume:
 proc:
   enable: true
   name: sidekiq
-  startLine: chromium
+  stopLine: systemctl stop sidekiq
+  startLine: systemctl start sidekiq
   memoryLimit: 2
   interval: 5
