@@ -19,13 +19,14 @@ class WatcherThread(threading.Thread):
         self.procName = config["name"]
         self.memoryLimit = config["memoryLimit"]
         self.startLine = config["startLine"]
+        self.interval = config["interval"]
     
     def run(self):
         self.checkEnabled = True
         while(self._running):
             log.info('Check process memory for: ' + self.procName)
             self.checkProc(self.procName, self.startLine)
-            time.sleep(5)
+            time.sleep(self.interval)
 
     def stop(self):
         self._running = False
