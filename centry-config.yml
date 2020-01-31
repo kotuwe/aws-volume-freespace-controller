@@ -1,18 +1,18 @@
-volume:
+volumeFreespaceControl:
   enable: false
-  lowLimit: 2
-  upLimit: 20
-  step: 2
-  interval: 5
+  minFreeSpace: 2
+  maxVolumeSize: 20
+  increaseStep: 2
+  checkInterval: 5
   EC2VolumeId: vol-0b748cdfc3f2658b3
-  rootDrive: /dev/xvda
-  rootPart: /dev/xvda1
-  rootPartNum: 1
+  EC2rootDrive: /dev/xvda
+  EC2rootPart: /dev/xvda1
+  EC2rootPartNum: 1
 
-proc:
+processMemoryControl:
   enable: true
   name: sidekiq
   stopLine: systemctl stop sidekiq
   startLine: systemctl start sidekiq
   memoryLimit: 2
-  interval: 5
+  checkInterval: 5

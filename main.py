@@ -2,14 +2,14 @@
 import time
 import yaml
 
-from procWatcher import procWatcher
-from volumeWatcher import volumeWatcher
+from processMemoryControl import procWatcher
+from volumeFreespaceControl import volumeWatcher
 
 def main():
-    procThread = procWatcher.WatcherThread(config["proc"])
+    procThread = procWatcher.WatcherThread(config["processMemoryControl"])
     procThread.start()
 
-    volumeThread = volumeWatcher.WatcherThread(config["volume"])
+    volumeThread = volumeWatcher.WatcherThread(config["volumeFreespaceControl"])
     volumeThread.start()
 
 

@@ -19,7 +19,7 @@ class WatcherThread(threading.Thread):
         self.procName = config["name"]
         self.memoryLimit = config["memoryLimit"]
         self.startLine = config["startLine"]
-        self.interval = config["interval"]
+        self.interval = config["checkInterval"]
     
     def run(self):
         self.checkEnabled = True

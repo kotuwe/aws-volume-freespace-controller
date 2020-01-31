@@ -21,13 +21,13 @@ class WatcherThread(threading.Thread):
             self._running = False
 
     def configure(self, config):
-        self.freeSpaceLowerLimit = config["lowLimit"]
-        self.growupStep = config["step"]
-        self.checkInterval = config["interval"]
+        self.minFreeSpace = config["minFreeSpace"]
+        self.increaseStep = config["increaseStep"]
+        self.checkInterval = config["checkInterval"]
         self.EC2volumeId = config["EC2VolumeId"]
-        self.rootDrive = config["rootDrive"]
-        self.rootPart = config["rootPart"]
-        self.rootPartNum = config["rootPartNum"]
+        self.EC2rootDrive = config["EC2rootDrive"]
+        self.EC2rootPart = config["EC2rootPart"]
+        self.EC2rootPartNum = config["EC2rootPartNum"]
     
     def run(self):
         while(self._running):
@@ -36,7 +36,7 @@ class WatcherThread(threading.Thread):
                 self.sendSlackNotification()
                 currentVolumeSize = self.getEC2VolumeSize()
                 if currentVolumeSize != 0:
-                    newVolumeSize = int(currentVolumeSize) + growupStep
+                    newVolumeSize = int(currentVolumeSize) + self.increaseStep
                     if self.updateEC2VolumeSize(newVolumeSize) == True:
                         if self.updatePartitionSize() == True:
                             self.resizeFs()
@@ -49,7 +49,7 @@ class WatcherThread(threading.Thread):
         return diskFreeSpace
 
     def checkFreeSpaceLimit(self, freeSpace):
-        if freeSpace < self.freeSpaceLowerLimit:
+        if freeSpace < self.minFreeSpace:
             log.info('Need to growup!')
             return True
         else:
@@ -57,7 +57,7 @@ class WatcherThread(threading.Thread):
             return False
 
     def getEC2VolumeSize(self):
-        cmd = "aws ec2 describe-volumes --volume-ids=" + EC2volumeId + " | jq -r '.Volumes' | jq -r '.[].Size'"
+        cmd = "aws ec2 describe-volumes --volume-ids=" + self.EC2volumeId + " | jq -r '.Volumes' | jq -r '.[].Size'"
         awsCurrentVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         size, error = awsCurrentVolumeSizeRun.communicate()
 
@@ -70,7 +70,7 @@ class WatcherThread(threading.Thread):
 
     def updateEC2VolumeSize(self, volumeSize):
         log.info('Trying to update EC2 volume size')
-        cmd = "aws ec2 modify-volume --volume-id " + EC2volumeId + " --size " + str(volumeSize)
+        cmd = "aws ec2 modify-volume --volume-id " + self.EC2volumeId + " --size " + str(volumeSize)
         awsUpdateVolumeSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         size, error = awsUpdateVolumeSizeRun.communicate()
 
@@ -85,7 +85,7 @@ class WatcherThread(threading.Thread):
             return False
 
     def updatePartitionSize(self):
-        cmd = "growpart " + rootDrive + " " + rootPartNum
+        cmd = "growpart " + EC2rootDrive + " " + EC2rootPartNum
         updatePartitionSizeRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         size, error = updatePartitionSizeRun.communicate()
 
@@ -97,7 +97,7 @@ class WatcherThread(threading.Thread):
             return False
         
     def resizeFs(self):
-        cmd = "resize2fs " + rootPart
+        cmd = "resize2fs " + EC2rootPart
         resizeFsRun = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         size, error = resizeFsRun.communicate()
 
