@@ -2,12 +2,12 @@
 import time
 import yaml
 
-from processMemoryControl import procWatcher
-from volumeFreespaceControl import volumeWatcher
+import processMemoryControl.procWatcher as procWatcher
+import volumeFreespaceControl.volumeWatcher as volumeWatcher
 
 def main():
-    procThread = procWatcher.WatcherThread(config["processMemoryControl"])
-    procThread.start()
+    processThread = procWatcher.WatcherThread(config["processMemoryControl"])
+    processThread.start()
 
     volumeThread = volumeWatcher.WatcherThread(config["volumeFreespaceControl"])
     volumeThread.start()
